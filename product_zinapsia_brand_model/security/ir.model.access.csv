@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_zinapsia_product_brand_user,zinapsia.product.brand.user,model_zinapsia_product_brand,stock.group_stock_user,1,0,0,0
+access_zinapsia_product_brand_manager,zinapsia.product.brand.manager,model_zinapsia_product_brand,stock.group_stock_manager,1,1,1,1

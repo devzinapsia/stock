@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_template_form_view_zinapsia_brand" model="ir.ui.view">
+        <field name="name">product.template.form.zinapsia.brand</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <field name="categ_id" position="after">
+                <field name="zinapsia_brand_id"/>
+                <field name="zinapsia_model"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="product_template_tree_view_zinapsia_brand" model="ir.ui.view">
+        <field name="name">product.template.list.zinapsia.brand</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="categ_id" position="after">
+                <field name="zinapsia_brand_id" optional="hide"/>
+                <field name="zinapsia_model" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="product_template_search_view_zinapsia_brand" model="ir.ui.view">
+        <field name="name">product.template.search.zinapsia.brand</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <field name="categ_id" position="after">
+                <field name="zinapsia_brand_id"/>
+            </field>
+            <filter name="group_by_categ_id" position="after">
+                <filter string="Brand" name="group_by_zinapsia_brand_id" context="{'group_by': 'zinapsia_brand_id'}"/>
+            </filter>
+        </field>
+    </record>
+
+</odoo>
