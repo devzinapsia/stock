@@ -6,10 +6,10 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
-            <field name="categ_id" position="after">
+            <group name="group_general" position="inside">
                 <field name="zinapsia_brand_id"/>
                 <field name="zinapsia_model"/>
-            </field>
+            </group>
         </field>
     </record>
 
@@ -36,6 +36,23 @@
             <filter name="group_by_categ_id" position="after">
                 <filter string="Brand" name="group_by_zinapsia_brand_id" context="{'group_by': 'zinapsia_brand_id'}"/>
             </filter>
+        </field>
+    </record>
+
+    <record id="product_template_kanban_view_zinapsia_brand" model="ir.ui.view">
+        <field name="name">product.template.kanban.zinapsia.brand</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            <field name="categ_id" position="after">
+                <field name="zinapsia_brand_id"/>
+                <field name="zinapsia_model"/>
+            </field>
+            <div class="mb-1" position="after">
+                <span t-if="record.zinapsia_brand_id.value or record.zinapsia_model.value" class="text-muted">
+                    <field name="zinapsia_brand_id"/><t t-if="record.zinapsia_model.value"> - <field name="zinapsia_model"/></t>
+                </span>
+            </div>
         </field>
     </record>
 
