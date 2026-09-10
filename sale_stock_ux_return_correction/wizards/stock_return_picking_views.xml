@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Deactivates sale_stock_ux's own inherited view (info banner, and
+        unhiding/relabeling the "to_refund" column) so the return wizard
+        falls back to the plain native stock/stock_account view: the
+        "Update quantities on SO/PO" column stays hidden behind
+        base.group_no_one + optional="hide", as in stock Odoo.
+    -->
+    <record id="sale_stock_ux.view_stock_return_picking_form" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

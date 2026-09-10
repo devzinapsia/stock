@@ -1,0 +1,28 @@
+<section style="font-family: -apple-system, Helvetica, Arial, sans-serif;">
+    <h2>Sale Stock UX Return Correction</h2>
+    <p>
+        Restores the native stock return wizard behavior for
+        <strong>purchase (incoming) returns</strong>, which
+        <code>sale_stock_ux</code> blocks by default with a "You cannot
+        create exchanges for return lines marked to refund" error.
+    </p>
+    <ul>
+        <li>
+            Hides <code>sale_stock_ux</code>'s explanatory banner and the
+            "Para Abonar (actualizar OC/OV)" column on the return wizard.
+        </li>
+        <li>
+            Lets the native <strong>"Devolución para cambio"</strong>
+            (Create exchanges) action run on purchase order returns.
+        </li>
+        <li>
+            Leaves sale order returns and exchanges untouched, since
+            <code>sale_stock_ux</code>'s exchange tagging still drives
+            <code>qty_delivered</code> accuracy there.
+        </li>
+        <li>
+            Restores <code>sale_stock_ux</code>'s original view on
+            uninstall.
+        </li>
+    </ul>
+</section>
