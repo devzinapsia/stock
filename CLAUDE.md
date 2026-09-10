@@ -7,10 +7,20 @@ relevant to the repo you are actually in applies. Detect which kind of
 repo you're in before doing anything:
 
 - If it contains Odoo module folders (each with its own `__manifest__.py`),
-  it's a **module development repo** → use Section A.
+  it's a **module development repo** → use Section A. These live under
+  `E:\zinapsia\devzinapsia\`.
 - If it has a `.gitmodules` file referencing other git repos (e.g.
   `zinapsia/*`, `ingadhoc/*`, `OCA/*`), it's a **client/deployment repo** →
-  use Section B.
+  use Section B. These live under `E:\zinapsia\clientes\`, one subfolder
+  per client.
+
+> **Adaptation note:** this file was adapted from a colleague's macOS
+> version to Windows. It assumes you work from Git Bash (MINGW64, bundled
+> with Git for Windows), since the commands below use bash/POSIX syntax
+> (`grep`, forward-slash paths, etc.). If you actually work from plain
+> PowerShell instead, tell Claude and this file should be updated —
+> `grep` isn't native there (`Select-String` is the equivalent) and
+> Git Bash paths like `/e/zinapsia/...` need to become `E:\zinapsia\...`.
 
 ## Company info (used in every manifest / LICENSE / README)
 
@@ -51,19 +61,39 @@ repo you're in before doing anything:
 ## Section A — Module development repos (e.g. account-financial-tools, stock)
 
 ### Environment
-- OS: macOS.
+- OS: Windows. Shell: Git Bash (see adaptation note above).
 - Odoo 19 source, used for tests and to confirm real view/menu XML ids
   before writing any xpath (never guess these from memory):
-  `/Users/pablocampo/devzinapsia/odoo19`
+  `E:\zinapsia\odoo\19`
 - Odoo 18 source, same purpose, for modules targeting 18.0:
-  `/Users/pablocampo/devzinapsia/odoo18`
+  `E:\zinapsia\odoo\18`
 - Always confirm the current git branch matches the Odoo version you're
   developing for (branch `19.0` → check against the Odoo 19 source, branch
   `18.0` → Odoo 18 source). Run `git branch` and check before starting;
   don't assume the checked-out branch is the right one.
+- Module development repos (this repo and its siblings) live under:
+  `E:\zinapsia\devzinapsia\<repo>`
+
+### Local test databases & client backups
+- `E:\zinapsia\databases` holds local Odoo test database dumps, including
+  client odoo.sh backups (`.zip`) kept here for local reproduction/
+  debugging of client-reported issues.
+- Before creating a fresh test database for the install/uninstall cycle
+  (see Testing & validation below), check this folder for an existing
+  dump that already matches the target Odoo version/client instead of
+  starting from scratch.
+- An odoo.sh backup `.zip` normally contains `dump.sql` + a `filestore/`
+  folder + `manifest.json`. Restoring locally means extracting it,
+  loading `dump.sql` into a fresh Postgres database (`psql`/`pg_restore`
+  depending on format), and copying `filestore/` into that database's
+  local Odoo filestore path. Confirm the exact restore steps with the
+  user before improvising if a particular backup's format is unfamiliar
+  — don't guess.
 
 ### Module folder naming
-- English, snake_case, descriptive of the feature.
+- English, snake_case, descriptive of the feature. This is the technical
+  name only (folder, Python package, xmlids) — it stays English even
+  though the manifest `name` (see below) is Spanish.
 
 ### Standard module contents (every module must have all of this)
 ```
@@ -95,13 +125,32 @@ repo you're in before doing anything:
 - Also put this module's own GitHub repo URL in `README.rst`'s "Bug
   Tracker" section (not in the manifest — the manifest `website` key only
   holds one URL, and that slot is reserved for the company site).
+- `name` and `summary`: written directly in **Spanish** as the source
+  text (e.g. `"name": "Notificaciones de vencimientos de pago"`), not
+  English-with-po-translation like other UI strings (see Coding language
+  rule 2 below) — these are what shows in the Apps list, and translating
+  a module's own `ir.module.module.shortdesc`/`summary` via po requires
+  referencing `base.module_<technical_name>` (an `ir.model.data` entry
+  Odoo creates itself, in the `base` module's namespace, not the
+  module's own), which is easy to get wrong and not worth the fragility
+  for text that only ever needs to be Spanish in practice. Mirror the
+  Spanish name in `README.rst`'s title heading and in
+  `static/description/index.html`'s `<title>`/`<h2 class="oe_slogan">`
+  too, so the module's identity is consistent everywhere it's named;
+  the rest of those files' prose is unaffected by this rule.
+- This Spanish-name rule applies going forward to new modules and to
+  modules touched for other reasons — it is not a mandate to go back and
+  retroactively rename every existing module's manifest `name` across
+  every repo; do that only if separately asked.
 
 ### Coding language rules (strict)
 1. All Python/XML/JS code and ALL comments/docstrings: English, no
    exceptions.
 2. All UI-facing strings (field `string=`, menu/action `name=`, help text):
    English source, fully translated in `es.po` and `es_AR.po` — never leave
-   `msgstr ""` empty.
+   `msgstr ""` empty. Exception: the module's own manifest `name`/
+   `summary` (the Apps-list display name) — see "Manifest fields" below,
+   those are Spanish source directly, no po entry.
 3. Business/master-data literal seed values may stay in Spanish when
    they're proper nouns or client-facing business terms — confirm with the
    user case by case, don't assume.
@@ -141,12 +190,17 @@ repo you're in before doing anything:
   (empty `company_id` = shared across all companies).
 
 ### Testing & validation before showing a diff
-1. `python3 -m py_compile` on all `.py` files.
+1. `python -m py_compile` on all `.py` files (confirm first whether your
+   Git Bash resolves `python` or `python3` to the right interpreter — run
+   `python --version` / `python3 --version` and use whichever is correct;
+   don't assume `python3` like on macOS/Linux).
 2. Well-formed XML check on all `.xml` files.
 3. TransactionCase tests covering the core scenarios of the module.
 4. **Always run this install/uninstall cycle against the matching local
    Odoo source** (the 19 or 18 path above, whichever matches the branch)
-   before considering the module done, using a local test database:
+   before considering the module done, using a local test database (see
+   "Local test databases & client backups" above for existing dumps to
+   start from):
    - Install the module. Confirm it installs with no errors.
    - Verify it's actually active (e.g. `-i <module> --stop-after-init` exits
      cleanly, and/or check `ir.module.module` state is `installed`).
@@ -166,6 +220,29 @@ repo you're in before doing anything:
 - Commit message format (English): `[ADD] <module_name>: <short summary>`.
 
 ### Hard-won Odoo debugging lessons
+- A `.po` file's `#:` occurrence comments aren't cosmetic — Odoo's
+  translation loader uses each one to decide which specific record/field
+  gets the `msgstr` written into its JSONB-translated column. Two records
+  can share the exact same English source text as a plain Python string,
+  but if only one of them has a `#:` reference in the `.po` file, only
+  that one gets translated; the other silently stays in English even
+  though the "same" msgid already has a translation elsewhere. Concretely:
+  adding a new `ir.actions.server` whose `name` reuses an existing button's
+  label (e.g. both "Reprocess") does NOT automatically translate the new
+  action's menu entry — add its own
+  `#: model:ir.actions.server,name:<module>.<xml_id>` line under that same
+  msgid in every `.po`/`.pot` file, or it ships English-only in the
+  Actions (⚙) menu regardless of how many other places already show it
+  correctly translated.
+- A `related=` field without its own `string=`/`help=` still gets its own
+  `ir.model.fields` row on the model that declares it — translating the
+  target field's `field_description`/`help` does NOT translate the
+  related field's copy shown wherever *it* renders (e.g. a
+  `res.company` field mirrored onto `res.config.settings`). Add `#:`
+  references for both `field_<company_table>__<name>` and
+  `field_<other_table>__<name>` under the same msgid, or the settings
+  screen quietly stays in English while the underlying company field
+  translates fine.
 - `self.assertRaises(...)` in Odoo's `TransactionCase` wraps the call in a
   cursor savepoint that rolls back once the expected exception is caught —
   this erases every change the code made before raising, not just the
@@ -207,34 +284,48 @@ repo you're in before doing anything:
   view_type='form')` and inspect the `<notebook>` elements in the returned
   arch) — and use `position="move"` plus a high view `priority` to relocate
   it if needed.
+- A checkbox nested inside a `<setting>` block's content-group, meant to
+  sit inline with its own label on one row, should copy the exact markup
+  an existing core checkbox of that kind already uses (e.g. account's
+  `link_qr_code` "Add QR-code link on PDF": a plain `<field>` directly
+  under a `d-flex` div, next to a `<div><label/><br/></div>`) rather than
+  improvising with Bootstrap `.row`/`.col-lg-*` or the
+  `o_setting_left_pane`/`o_setting_right_pane` pair — the latter is for a
+  standalone boxed toggle, not a plain sub-option, and renders stacked
+  with a stray border in that context.
 - To verify a fix against a client's actual third-party modules instead of
   guessing: point a temporary `--addons-path` at that client's deployment
-  repo submodules (e.g. `<client-repo>/ingadhoc/*`, `<client-repo>/OCA/*`)
-  and install for real in a scratch local database. Reading those
-  submodules for this kind of investigation/testing is fine and often the
-  only reliable way to reproduce a client-specific bug — the "never touch
-  `ingadhoc/*`/`OCA/*`" rule (Section B) is about not *modifying* them, not
-  about being unable to read/install them locally for diagnosis.
+  repo submodules (e.g. `E:\zinapsia\clientes\<client>\ingadhoc\*`,
+  `E:\zinapsia\clientes\<client>\OCA\*`) and install for real in a scratch
+  local database. Reading those submodules for this kind of investigation/
+  testing is fine and often the only reliable way to reproduce a
+  client-specific bug — the "never touch `ingadhoc/*`/`OCA/*`" rule
+  (Section B) is about not *modifying* them, not about being unable to
+  read/install them locally for diagnosis.
 
 ---
 
 ## Section B — Client / odoo.sh deployment repos (e.g. grupolara)
 
 ### Environment
-- These repos deploy Odoo for a specific client via odoo.sh, and consume
-  module repos (like account-financial-tools, stock) as git submodules,
-  typically grouped under a `zinapsia/` folder alongside other submodule
-  groups such as `ingadhoc/*` and `OCA/*`.
+- These repos deploy Odoo for a specific client via odoo.sh, and live
+  under `E:\zinapsia\clientes\<client>` — one subfolder per client,
+  each tracking that client's own odoo.sh deployment repo.
+- They consume module repos (developed in `E:\zinapsia\devzinapsia`, e.g.
+  account-financial-tools, stock) as git submodules, typically grouped
+  under a `zinapsia/` folder alongside other submodule groups such as
+  `ingadhoc/*` and `OCA/*`.
 - **Never touch `ingadhoc/*` or `OCA/*` submodules unless explicitly
   asked** — only work with `zinapsia/*`.
 - Confirm the tracked branch of a submodule with:
   `grep -A5 "<submodule-name>" .gitmodules`
 
 ### Golden rules for submodule commands
-1. Always run submodule commands from the **repo root**, never from inside
-   a subfolder — a submodule path is relative to the repo root, and
-   running the command elsewhere can make git silently update *all*
-   submodules instead of just the intended one.
+1. Always run submodule commands from the **repo root**
+   (`E:\zinapsia\clientes\<client>`), never from inside a subfolder — a
+   submodule path is relative to the repo root, and running the command
+   elsewhere can make git silently update *all* submodules instead of
+   just the intended one.
 2. Always scope the update to the specific path:
    ```bash
    git submodule update --remote --merge -- zinapsia/<module-repo>
@@ -249,7 +340,7 @@ repo you're in before doing anything:
 
 ### Standard update flow (repeat per branch — pointers are independent per branch)
 ```bash
-cd <repo root>
+cd E:\zinapsia\clientes\<client>   # or, in Git Bash: cd /e/zinapsia/clientes/<client>
 git checkout <branch>
 git submodule update --remote --merge -- zinapsia/<module-repo>
 git status   # must show ONLY the intended submodule as modified
