@@ -1,6 +1,6 @@
-=================================
-Sale Stock UX Return Correction
-=================================
+====================================================
+Corrección de devoluciones de compra (sale_stock_ux)
+====================================================
 
 .. |badge1| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html

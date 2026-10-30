@@ -1,6 +1,6 @@
 {
-    "name": "Sale Stock UX Return Correction",
-    "summary": "Restores the native stock return wizard for purchase (incoming) returns",
+    "name": "Corrección de devoluciones de compra (sale_stock_ux)",
+    "summary": "Restaura el asistente nativo de devoluciones para las devoluciones de compra (entrantes)",
     "version": "19.0.1.0.0",
     "category": "Inventory/Inventory",
     "license": "AGPL-3",
