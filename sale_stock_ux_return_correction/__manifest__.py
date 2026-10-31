@@ -1,19 +1,16 @@
 {
-    "name": "Corrección de devoluciones de compra (sale_stock_ux)",
-    "summary": "Restaura el asistente nativo de devoluciones para las devoluciones de compra (entrantes)",
-    "version": "19.0.1.0.0",
+    "name": "Corrección de devoluciones de compra (obsoleto)",
+    "summary": "Obsoleto: reemplazado por Mejoras a stock y compras (Adhoc UX). Actualizarlo y luego desinstalarlo",
+    "version": "19.0.2.0.0",
     "category": "Inventory/Inventory",
     "license": "AGPL-3",
     "author": "Zinapsia",
     "website": "https://www.zinapsia.com",
     "depends": [
-        "sale_stock_ux",
+        "stock_ux_improvements",
     ],
-    "data": [
-        "wizards/stock_return_picking_views.xml",
-    ],
+    "data": [],
     "auto_install": False,
     "application": False,
     "installable": True,
-    "uninstall_hook": "uninstall_hook",
 }

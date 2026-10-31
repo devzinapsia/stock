@@ -1,28 +1,11 @@
 <section style="font-family: -apple-system, Helvetica, Arial, sans-serif;">
-    <h2>Corrección de devoluciones de compra (sale_stock_ux)</h2>
+    <h2>Corrección de devoluciones de compra (obsoleto)</h2>
     <p>
-        Restores the native stock return wizard behavior for
-        <strong>purchase (incoming) returns</strong>, which
-        <code>sale_stock_ux</code> blocks by default with a "You cannot
-        create exchanges for return lines marked to refund" error.
+        <strong>Este módulo es obsoleto.</strong> Sus funciones se trasladaron a
+        <code>stock_ux_improvements</code> (<em>Mejoras a stock y compras (Adhoc UX)</em>).
     </p>
-    <ul>
-        <li>
-            Hides <code>sale_stock_ux</code>'s explanatory banner and the
-            "Para Abonar (actualizar OC/OV)" column on the return wizard.
-        </li>
-        <li>
-            Lets the native <strong>"Devolución para cambio"</strong>
-            (Create exchanges) action run on purchase order returns.
-        </li>
-        <li>
-            Leaves sale order returns and exchanges untouched, since
-            <code>sale_stock_ux</code>'s exchange tagging still drives
-            <code>qty_delivered</code> accuracy there.
-        </li>
-        <li>
-            Restores <code>sale_stock_ux</code>'s original view on
-            uninstall.
-        </li>
-    </ul>
+    <p>
+        En las bases donde está instalado: actualizarlo (instala
+        <code>stock_ux_improvements</code> automáticamente) y después desinstalarlo.
+    </p>
 </section>
